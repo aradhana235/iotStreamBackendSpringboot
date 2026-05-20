@@ -1,29 +1,69 @@
 package com.alphacore.model;
 
 import jakarta.persistence.*;
+import java.util.UUID;
 
 @Entity
 @Table(name = "alarm")
 public class Alarm {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @Column(name = "id")
+    private UUID id;
+
+    @Column(name = "originator_id")
+    private String originator;
 
     @Column(name = "type")
-    private String alarmType;
+    private String type;
 
-    // Getter Setter
+    @Column(name = "severity")
+    private String severity;
 
-    public Long getId() {
+    @Column(name = "created_time")
+    private String createdTime;
+
+    // =========================
+    // GETTERS SETTERS
+    // =========================
+
+    public UUID getId() {
         return id;
     }
 
-    public String getAlarmType() {
-        return alarmType;
+    public void setId(UUID id) {
+        this.id = id;
     }
 
-    public void setAlarmType(String alarmType) {
-        this.alarmType = alarmType;
+    public String getOriginator() {
+        return originator;
+    }
+
+    public void setOriginator(String originator) {
+        this.originator = originator;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
+
+    public String getSeverity() {
+        return severity;
+    }
+
+    public void setSeverity(String severity) {
+        this.severity = severity;
+    }
+
+    public String getCreatedTime() {
+        return createdTime;
+    }
+
+    public void setCreatedTime(String createdTime) {
+        this.createdTime = createdTime;
     }
 }

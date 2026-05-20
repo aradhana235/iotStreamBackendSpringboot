@@ -3,16 +3,12 @@ package com.alphacore.controller;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
-
+import com.alphacore.model.Alarm;
 import com.alphacore.model.DashboardStats;
-import com.alphacore.repository.DashboardRepository;
-import com.alphacore.repository.DeviceRepository;
 import com.alphacore.repository.AlarmRepository;
+import com.alphacore.repository.DashboardRepository;
 
 @CrossOrigin(origins = "http://localhost:5173")
 @RestController
@@ -20,22 +16,15 @@ import com.alphacore.repository.AlarmRepository;
 public class TestController {
 
     @Autowired
-    private DeviceRepository deviceRepository;
-
-    @Autowired
     private DashboardRepository dashboardRepository;
 
-    // Total Devices Count API
-    @GetMapping("/total-devices")
-    public Long getTotalDevices() {
-
-        return deviceRepository.getTotalDevices();
-    }
-    
-    
     @Autowired
     private AlarmRepository alarmRepository;
-    
+
+    // =========================
+    // COUNTS
+    // =========================
+
     @GetMapping("/medium-count")
     public Long getMediumCount() {
 
@@ -48,10 +37,10 @@ public class TestController {
         return alarmRepository.getBlockCount();
     }
 
-    @GetMapping("/full-PartialLeak-count")
-    public Long getFullBlockCount() {
+    @GetMapping("/partial-leak-count")
+    public Long getPartialLeakCount() {
 
-        return alarmRepository.getFullBlockCount();
+        return alarmRepository.getPartialLeakCount();
     }
 
     @GetMapping("/full-leak-count")
@@ -60,7 +49,20 @@ public class TestController {
         return alarmRepository.getFullLeakCount();
     }
 
-    // Dashboard Stats API
+    // =========================
+    // ALL ALERTS TABLE DATA
+    // =========================
+
+    @GetMapping("/alarms")
+    public List<Alarm> getAllAlarms() {
+
+        return alarmRepository.findAll();
+    }
+
+    // =========================
+    // DASHBOARD
+    // =========================
+
     @GetMapping("/dashboard-stats")
     public List<DashboardStats> getDashboardStats() {
 

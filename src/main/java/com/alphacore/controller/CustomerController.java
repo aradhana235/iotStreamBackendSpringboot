@@ -2,11 +2,13 @@ package com.alphacore.controller;
 
 import com.alphacore.model.Customer;
 import com.alphacore.repository.CustomerRepository;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/customers")
@@ -16,45 +18,60 @@ public class CustomerController {
     @Autowired
     private CustomerRepository customerRepository;
 
-    // GET ALL CUSTOMERS
+    // GET ALL
     @GetMapping
     public List<Customer> getAllCustomers() {
         return customerRepository.findAll();
     }
 
-    // GET CUSTOMER BY ID
+    // GET BY ID
     @GetMapping("/{id}")
-    public Optional<Customer> getCustomerById(@PathVariable String id) {
+    public Optional<Customer> getCustomerById(
+            @PathVariable UUID id
+    ) {
         return customerRepository.findById(id);
     }
 
-    // CREATE CUSTOMER
+    // CREATE
     @PostMapping
-    public Customer createCustomer(@RequestBody Customer customer) {
+    public Customer createCustomer(
+            @RequestBody Customer customer
+    ) {
         return customerRepository.save(customer);
     }
 
-    // UPDATE CUSTOMER
+    // UPDATE
     @PutMapping("/{id}")
-    public Customer updateCustomer(@PathVariable String id,
-                                   @RequestBody Customer updatedCustomer) {
+    public Customer updateCustomer(
+            @PathVariable UUID id,
+            @RequestBody Customer updatedCustomer
+    ) {
 
-        return customerRepository.findById(id).map(customer -> {
+        return customerRepository.findById(id)
+                .map(customer -> {
 
-            customer.setTitle(updatedCustomer.getTitle());
-            customer.setEmail(updatedCustomer.getEmail());
-            customer.setPhone(updatedCustomer.getPhone());
-            customer.setZip(updatedCustomer.getZip());
+                    customer.setTitle(updatedCustomer.getTitle());
+                    customer.setEmail(updatedCustomer.getEmail());
+                    customer.setPhone(updatedCustomer.getPhone());
+                    customer.setZip(updatedCustomer.getZip());
 
-            return customerRepository.save(customer);
+                    return customerRepository.save(customer);
 
-        }).orElseThrow(() -> new RuntimeException("Customer not found with id " + id));
+                }).orElseThrow(() ->
+                        new RuntimeException(
+                                "Customer not found with id " + id
+                        )
+                );
     }
 
-    // DELETE CUSTOMER
+    // DELETE
     @DeleteMapping("/{id}")
-    public String deleteCustomer(@PathVariable String id) {
+    public String deleteCustomer(
+            @PathVariable UUID id
+    ) {
+
         customerRepository.deleteById(id);
-        return "Customer deleted successfully with id " + id;
+
+        return "Customer deleted successfully";
     }
 }

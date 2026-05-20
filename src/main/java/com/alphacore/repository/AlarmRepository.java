@@ -1,5 +1,7 @@
 package com.alphacore.repository;
 
+import java.util.UUID;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
@@ -7,17 +9,17 @@ import org.springframework.stereotype.Repository;
 import com.alphacore.model.Alarm;
 
 @Repository
-public interface AlarmRepository extends JpaRepository<Alarm, Long> {
+public interface AlarmRepository extends JpaRepository<Alarm, UUID> {
 
-    @Query("SELECT COUNT(a) FROM Alarm a WHERE a.alarmType = 'MEDIUM'")
+    @Query("SELECT COUNT(a) FROM Alarm a WHERE a.type = 'MEDIUM'")
     Long getMediumCount();
 
-    @Query("SELECT COUNT(a) FROM Alarm a WHERE a.alarmType = 'trap_blocked'")
+    @Query("SELECT COUNT(a) FROM Alarm a WHERE a.type = 'trap_blocked'")
     Long getBlockCount();
 
-    @Query("SELECT COUNT(a) FROM Alarm a WHERE a.alarmType = 'SteamTrapPartialLeak'")
-    Long getFullBlockCount();
+    @Query("SELECT COUNT(a) FROM Alarm a WHERE a.type = 'SteamTrapPartialLeak'")
+    Long getPartialLeakCount();
 
-    @Query("SELECT COUNT(a) FROM Alarm a WHERE a.alarmType = 'trap_fullleak'")
+    @Query("SELECT COUNT(a) FROM Alarm a WHERE a.type = 'trap_fullleak'")
     Long getFullLeakCount();
 }

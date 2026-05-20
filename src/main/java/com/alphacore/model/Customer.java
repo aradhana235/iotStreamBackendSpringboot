@@ -1,14 +1,22 @@
 package com.alphacore.model;
 
 import jakarta.persistence.*;
+import org.hibernate.annotations.UuidGenerator;
+
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.util.UUID;
 
 @Entity
 @Table(name = "customer")
 public class Customer {
 
     @Id
-    @Column(name = "id")
-    private String id;
+    @GeneratedValue
+    @UuidGenerator
+    @Column(name = "id", updatable = false, nullable = false)
+    private UUID id;
 
     @Column(name = "title")
     private String title;
@@ -22,15 +30,22 @@ public class Customer {
     @Column(name = "zip")
     private String zip;
 
-    public Customer() {
+    // 🔥 BIGINT epoch millis
+    @Column(name = "created_time", nullable = false, updatable = false)
+    private Long createdTime;
+
+    public Customer() {}
+
+    // 🔥 AUTO SET BEFORE INSERT (IMPORTANT FIX)
+    @PrePersist
+    public void onCreate() {
+        if (this.createdTime == null) {
+            this.createdTime = System.currentTimeMillis();
+        }
     }
 
-    public String getId() {
+    public UUID getId() {
         return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
     }
 
     public String getTitle() {
@@ -63,5 +78,24 @@ public class Customer {
 
     public void setZip(String zip) {
         this.zip = zip;
+    }
+
+    // raw value
+    public Long getCreatedTimeRaw() {
+        return createdTime;
+    }
+
+    public void setCreatedTime(Long createdTime) {
+        this.createdTime = createdTime;
+    }
+
+    // 🔥 frontend readable conversion
+    @Transient
+    public LocalDateTime getCreatedTime() {
+        if (createdTime == null) return null;
+
+        return Instant.ofEpochMilli(createdTime)
+                .atZone(ZoneId.systemDefault())
+                .toLocalDateTime();
     }
 }

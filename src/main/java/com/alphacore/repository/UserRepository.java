@@ -1,8 +1,13 @@
 package com.alphacore.repository;
 
 import com.alphacore.model.User;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface UserRepository extends JpaRepository<User, Long> {
-    User findByUsername(String username);
+import java.util.UUID;
+
+public interface UserRepository
+        extends JpaRepository<User, UUID> {
+
+    User findByEmail(String email);
 }
