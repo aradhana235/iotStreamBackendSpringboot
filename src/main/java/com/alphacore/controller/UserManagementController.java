@@ -17,42 +17,26 @@ public class UserManagementController {
     @Autowired
     private UserRepository userRepository;
 
-    // =========================
-    // GET ALL USERS
-    // =========================
-
     @GetMapping
     public List<User> getAllUsers() {
-
         return userRepository.findAll();
     }
 
-    // =========================
-    // GET USER BY ID
-    // =========================
-
     @GetMapping("/{id}")
-    public User getUserById(
-            @PathVariable UUID id) {
-
-        return userRepository.findById(id)
-                .orElse(null);
+    public User getUserById(@PathVariable UUID id) {
+        return userRepository.findById(id).orElse(null);
     }
 
-    // =========================
-    // CREATE USER
-    // =========================
-
     @PostMapping
-    public User createUser(
-            @RequestBody User user) {
+    public User createUser(@RequestBody User user) {
+
+        // SAFE DEFAULTS
+        if (user.getAuthority() == null) {
+            user.setAuthority("USER");
+        }
 
         return userRepository.save(user);
     }
-
-    // =========================
-    // UPDATE USER
-    // =========================
 
     @PutMapping("/{id}")
     public User updateUser(
@@ -62,39 +46,21 @@ public class UserManagementController {
         return userRepository.findById(id)
                 .map(user -> {
 
-                    user.setFirstName(
-                            updatedUser.getFirstName());
-
-                    user.setLastName(
-                            updatedUser.getLastName());
-
-                    user.setEmail(
-                            updatedUser.getEmail());
-
-                    user.setPhone(
-                            updatedUser.getPhone());
-
-                    user.setAuthority(
-                            updatedUser.getAuthority());
-
-                    user.setAdditionalInfo(
-                            updatedUser.getAdditionalInfo());
+                    user.setFirstName(updatedUser.getFirstName());
+                    user.setLastName(updatedUser.getLastName());
+                    user.setEmail(updatedUser.getEmail());
+                    user.setPhone(updatedUser.getPhone());
+                    user.setAuthority(updatedUser.getAuthority());
 
                     return userRepository.save(user);
 
                 }).orElse(null);
     }
 
-    // =========================
-    // DELETE USER
-    // =========================
-
     @DeleteMapping("/{id}")
-    public String deleteUser(
-            @PathVariable UUID id) {
+    public String deleteUser(@PathVariable UUID id) {
 
         userRepository.deleteById(id);
-
         return "User deleted successfully";
     }
 }
