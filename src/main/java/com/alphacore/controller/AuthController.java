@@ -1,79 +1,75 @@
 package com.alphacore.controller;
 
 import com.alphacore.model.LoginRequest;
-import com.alphacore.model.User;
-import com.alphacore.repository.UserRepository;
-import com.alphacore.security.JwtUtil;
 
+import com.alphacore.model.OtpRequest;
+import com.alphacore.model.ForgotPasswordRequest;
+import com.alphacore.model.ResetPasswordRequest;
+import com.alphacore.service.AuthenticationService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Map;
-
 @RestController
 @RequestMapping("/auth")
-@CrossOrigin("*")
+@CrossOrigin(origins = "http://localhost:3000")
 public class AuthController {
 
-    private final UserRepository userRepository;
+    private final AuthenticationService authenticationService;
 
-    public AuthController(
-            UserRepository userRepository
-    ) {
-        this.userRepository = userRepository;
+    public AuthController(AuthenticationService authenticationService) {
+        this.authenticationService = authenticationService;
     }
 
     // =========================
     // LOGIN
     // =========================
-
     @PostMapping("/login")
-    public ResponseEntity<?> login(
-            @RequestBody LoginRequest request
-    ) {
-
-        // FIND USER BY EMAIL
-        User user =
-                userRepository.findByEmail(
-                        request.getEmail()
-                );
-
-        // USER NOT FOUND
-        if (user == null) {
-
-            return ResponseEntity
-                    .status(401)
-                    .body("Invalid Email");
-        }
-
-        // PASSWORD CHECK
-        if (!user.getAdditionalInfo()
-                .equals(request.getPassword())) {
-
-            return ResponseEntity
-                    .status(401)
-                    .body("Invalid Password");
-        }
-
-        // JWT TOKEN
-        String token =
-                JwtUtil.generateToken(
-                        user.getEmail(),
-                        user.getAuthority()
-                );
-
+    public ResponseEntity<?> login(@RequestBody LoginRequest request) {
         return ResponseEntity.ok(
-
-                Map.of(
-                        "token", token,
-                        "email", user.getEmail(),
-                        "authority",
-                        user.getAuthority(),
-                        "firstName",
-                        user.getFirstName(),
-                        "lastName",
-                        user.getLastName()
-                )
+            authenticationService.login(request.getEmail(), request.getPassword())
         );
     }
+    // =========================
+    // VERIFY OTP
+    // =========================
+    @PostMapping("/verify-otp")
+    public ResponseEntity<?> verifyOtp(@RequestBody OtpRequest request) {
+
+        String result = authenticationService.verifyOtp(
+                request.getEmail(),
+                request.getOtp()
+        );
+
+        return ResponseEntity.ok(result);
+    }
+    
+    // =========================
+    // FORGOT PASSWORD
+    // =========================
+    @PostMapping("/forgot-password")
+    public ResponseEntity<?> forgotPassword(
+            @RequestBody ForgotPasswordRequest request) {
+
+        authenticationService.forgotPassword(
+                request.getEmail()
+        );
+
+        return ResponseEntity.ok("Password reset link sent successfully");
+    }
+
+    // =========================
+    // RESET PASSWORD
+    // =========================
+    @PostMapping("/reset-password")
+    public ResponseEntity<?> resetPassword(
+            @RequestBody ResetPasswordRequest request) {
+
+        authenticationService.resetPassword(
+                request.getToken(),
+                request.getNewPassword()
+        );
+
+        return ResponseEntity.ok("Password updated successfully");
+    }
+
 }
